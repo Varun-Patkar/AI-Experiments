@@ -4,6 +4,8 @@ A collection of AI-powered projects exploring local LLM capabilities, speech pro
 
 ![Projects](https://img.shields.io/badge/Projects-2-blue) ![License](https://img.shields.io/badge/License-MIT-green) ![Status](https://img.shields.io/badge/Status-Active-success)
 
+> **Note:** While excellent open-source alternatives like Open WebUI exist, this project was built as a deep dive into understanding LLMs, local AI architectures, and hands-on experimentation with different models and integration patterns. It represents my journey in learning how these technologies work together and how to build AI applications from scratch.
+
 ## 🚀 Projects
 
 ### 1. [LocalChat](./LocalChat)
@@ -293,6 +295,7 @@ All projects in this repository are licensed under the MIT License. See individu
 
 - GitHub: [@Varun-Patkar](https://github.com/Varun-Patkar)
 - Repository: [AI-Experiments](https://github.com/Varun-Patkar/AI-Experiments)
+- YouTube Demo: [LocalChat Full Walkthrough](https://youtu.be/wOkEOsk_maA)
 
 ## 🌟 Star History
 
