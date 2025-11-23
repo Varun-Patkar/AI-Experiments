@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Whisper + Kokoro Tester</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 30px; }
+button { padding: 10px 18px; margin: 8px; font-size: 16px; }
+textarea { width: 100%; height: 90px; font-size: 15px; margin-top: 10px; }
+#status { font-weight: bold; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<h2>🎤 Speech → Text (Whisper)</h2>
+<button id="recordBtn">🎙 Start Recording</button>
+<p id="status"></p>
+<textarea id="sttResult" placeholder="Transcription will appear here..."></textarea>
+
+<hr><br>
+
+<h2>🔊 Text → Speech (Kokoro)</h2>
+<textarea id="ttsText" placeholder="Type something to speak..."></textarea><br>
+<select id="voice">
+  <option value="af_bella">af_bella</option>
+  <option value="af_female">af_female</option>
+  <option value="af_heart">af_heart</option>
+  <option value="am_male">am_male</option>
+</select>
+<button id="ttsBtn">🔊 Speak</button><br><br>
+<audio id="audioPlayer" controls></audio>
+
+<script>
+let mediaRecorder;
+let audioChunks = [];
+const recordBtn = document.getElementById("recordBtn");
+const status = document.getElementById("status");
+const sttResult = document.getElementById("sttResult");
+
+// ---------- STT Recording ----------
+recordBtn.onclick = async () => {
+  if (!mediaRecorder || mediaRecorder.state === "inactive") {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+
+    mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+    mediaRecorder.onstop = sendAudioToSTT;
+
+    mediaRecorder.start();
+    recordBtn.innerText = "⏹ Stop Recording";
+    status.innerText = "Recording...";
+  } else {
+    mediaRecorder.stop();
+    recordBtn.innerText = "🎙 Start Recording";
+    status.innerText = "Processing...";
+  }
+};
+
+// ---------- Send to /stt ----------
+async function sendAudioToSTT() {
+  const blob = new Blob(audioChunks, { type: "audio/webm" });
+  const formData = new FormData();
+  formData.append("file", blob, "speech.webm");
+
+  const res = await fetch("http://localhost:9000/stt", {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+  sttResult.value = data.text || "";
+  status.innerText = "Done";
+}
+
+// ---------- TTS ----------
+document.getElementById("ttsBtn").onclick = async () => {
+  const text = document.getElementById("ttsText").value.trim();
+  if (!text) return alert("Enter text");
+
+  const voice = document.getElementById("voice").value;
+
+  const res = await fetch("http://localhost:9000/tts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, voice, format: "mp3" })
+  });
+
+  const data = await res.json();
+
+  const audioBase64 = data.audio_base64;
+  const audioElement = document.getElementById("audioPlayer");
+  audioElement.src = "data:audio/mp3;base64," + audioBase64;
+  audioElement.play();
+};
+</script>
+</body>
+</html>

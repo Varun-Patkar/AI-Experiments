@@ -1,0 +1,10 @@
+# LocalChat Docker
+
+node_modules
+dist
+.git
+.gitignore
+.vscode
+*.md
+npm-debug.log
+.env

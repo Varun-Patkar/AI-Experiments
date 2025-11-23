@@ -1,0 +1,57 @@
+# see https://docs.searxng.org/admin/settings/settings.html#settings-use-default-settings
+use_default_settings:
+  engines:
+    keep_only:
+      - google
+      - duckduckgo
+      - wikipedia
+      - reddit
+      - stackexchange
+search:
+  formats:
+    - html
+    - json
+server:
+  # base_url is defined in the SEARXNG_BASE_URL environment variable, see .env and docker-compose.yml
+  secret_key: "ultrasecretkey"  # change this!
+  limiter: false  # enable this when running the instance for a public usage on the internet
+  image_proxy: true
+  cors: 
+    enabled: true
+    allow_origins: 
+      - "*"
+    allow_methods: 
+      - "GET"
+      - "POST"
+      - "OPTIONS"
+redis:
+  url: redis://redis:6379/0
+
+engines:
+  # --- GOOGLE ---
+  - name: google
+    engine: google
+    use_mobile_ua: true
+    disabled: false
+    timeout: 4.0
+  # --- DUCKDUCKGO ---
+  - name: duckduckgo
+    engine: duckduckgo
+    disabled: false
+    timeout: 3.0
+  # --- WIKIPEDIA ---
+  - name: wikipedia
+    engine: wikipedia
+    disabled: false
+    timeout: 3.0
+  # --- REDDIT ---
+  - name: reddit
+    engine: reddit
+    disabled: false
+    timeout: 3.0
+  # --- STACKOVERFLOW ---
+  - name: stackoverflow
+    engine: stackexchange
+    api_site: stackoverflow
+    disabled: false
+    timeout: 3.0
